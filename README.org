@@ -1,0 +1,62 @@
+#+title:Org Context Clues
+
+This is a simple project whose aim is to automatically remind you of
+important notes about projects you haven't worked on in a while.
+The way it works is that you add your context clues (gotchas, caveats,
+important things to remember,...) to each heading as appropriate. When
+you clock in on a heading, if it has been more than =org-cc-days= since
+you last clocked in you get a buffer displaying the notes for your
+current heading and all its parents.
+
+#+attr_org: :width 800
+Example:
+[[file:screenshot.png]]
+The left window shows the org file and the right window shows the
+context clues produced.
+
+* How it works
+It uses the same mechanism as =org-attach= to create a notes directory
+for the heading (creating a uuid for the heading if needed). When you
+call =org-cc-edit-cc-file=, it lets you edit the file =cc.org= in the
+current heading's notes directory.
+
+If you invoke =org-cc-display-notes=, your heading is searched for clock entries (*important*: =org-cc=
+searches for the =LOGBOOK= drawer; /i.e./, it assumes you have
+=org-log-into-drawer= set to =t=) and if no clock entries are found or the
+last clocked out entry was more than =org-cc-days= ago, it will display
+the context clues.
+
+To force the display of notes regardless of when you last worked on
+the heading you can:
+1. Set =org-cc-days= to 0 and call =org-cc-display-notes=
+2. Call =org-cc-display-notes= with a prefix argument
+
+* Installation
+- Clone this repository
+- In your init file, make sure you add
+  #+begin_src elisp
+    (add-to-list 'load-path "/path/to/org-cc")
+  #+end_src
+* Example configuration   
+#+begin_src elisp 
+  (use-package org-cc
+    :ensure nil
+    :after org
+    :custom
+    (org-cc-directory (concat org-directory "org-cc")) ;; subdirectory of the heading's attachment directory
+    (org-cc-days 14)
+    :init
+    (add-hook 'org-clock-in-hook #'org-cc-display-notes)
+    (evil-leader/set-key
+      "k" (lambda () (interactive) (org-cc-edit-cc-file))
+      "x" (lambda () (interactive) (org-cc-display-notes t))))
+#+end_src
+
+* TODO
+- [ ] Allow overriding of =org-cc-days= for each heading with a property
+
+* Known bugs
+- The notes file is a full org file and its contents are currently
+  inserted into the context clues buffer. If you add headings to it,
+  they will not be nested under the org file's headings but will be
+  inserted as-is. 
