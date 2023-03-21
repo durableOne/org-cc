@@ -52,7 +52,7 @@ the heading you can:
       "x" (lambda () (interactive) (org-cc-display-notes t))))
 #+end_src
 
-* TODO
+* Features to add
 - [ ] Allow overriding of =org-cc-days= for each heading with a property
 
 * Known bugs
