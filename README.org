@@ -12,7 +12,22 @@ current heading and all its parents.
 Example:
 [[file:screenshot.png]]
 The left window shows the org file and the right window shows the
-context clues produced.
+context clues produced when =org-cc-display-notes= is called with the
+point in the "Meet Strider" heading.
+
+The main use case for this package is to provide a standard place where
+you can stash long notes about each entry without cluttering your main
+agenda file. If you have many sub-tasks in a project like the
+above case, you may be lost trying to find the notes pertaining to
+this task and its "context" (its ancestors). This package shows you
+the current heading in the context of its ancestors and any notes you
+have made pertaining to that context.
+
+If you go with the suggested configuration below, this package can
+also check if you haven't worked on a project in a while and
+automatically flash for you important ideas related to that project so
+you make sure you remember the key points before you pick up work
+again on that project.
 
 * How it works
 It uses the same mechanism as =org-attach= to create a notes directory
@@ -53,7 +68,7 @@ the heading you can:
 #+end_src
 
 * Features to add
-- [ ] Allow overriding of =org-cc-days= for each heading with a property
+- [X] Allow overriding of =org-cc-days= for each heading with a property
 
 * Known bugs
 - The notes file is a full org file and its contents are currently
