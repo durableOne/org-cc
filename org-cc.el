@@ -1,5 +1,6 @@
 ;;; Package: org-cc.el - Context clues for Org projects
 (require 'cl-lib)
+(require 'org-attach)
 
 (defcustom org-cc-directory (concat org-directory "org-cc") "Directory in which the context clue files will be stored.")
 (defcustom org-cc-days 14 "Number of days since last work to trigger display of context clues.")
@@ -45,7 +46,7 @@
   (let ((logbook (org-get-logbook-notes)))
     (if logbook
         (save-match-data
-          (string-match "^CLOCK: \\(.*--\\[.*\\)$" logbook)
+          (string-match "^[[:space:]]*CLOCK: \\(.*--\\[.*\\)$" logbook)
           (let ((clock (match-string 1 logbook))) 
             (if clock
                 (progn
@@ -78,20 +79,29 @@
 
 ;;;###autoload
 (defun org-cc-display-notes (&optional no-time-check)
-  "Retrieve all the notes for this heading and its parents and concat them to a buffer"
+  "Retrieve all the notes for this heading and its parents and concat them to a buffer.
+   This only happens if the task has never been clocked into or the last clocked out time
+   was more than the number of days in the threshold. The number of days in the threshold
+   can be specified by customizing the variable `org-cc-days`. This can also be specified
+   on a per-heading basis by specifying the heading property `org-cc-days`"
   (interactive "P")
-  (let ((last-worked (org-cc-get-time-since-last-work))
-        (no-time-check (or no-time-check nil))) 
+  (let* ((last-worked (org-cc-get-time-since-last-work))
+         (no-time-check (or no-time-check nil))
+         (entry-override (org-entry-get nil "org-cc-days"))
+         (days-threshold (if entry-override
+                             (string-to-number entry-override)
+                           org-cc-days))) 
     (when (or
            no-time-check
            (not last-worked)
-           (<= last-worked (- org-cc-days)))
+           (<= last-worked (- days-threshold)))
       (let ((buffer (get-buffer-create "*Org Context Clues*"))
             (headings-and-contents (org-cc-get-notes-files)))
         (unless (cl-every 'null (mapcar 'cdr headings-and-contents))
           (switch-to-buffer-other-window buffer)
           (kill-region (point-min) (point-max))
           (org-mode)
+          (org-indent-mode)
           (insert "#+title: Org Context Clues\n\n")
           (cl-labels ((insert-heading-and-contents (heading-and-contents level)
                         ;; Collect notes for all headings and insert them into the buffer
@@ -106,6 +116,7 @@
                               (insert (with-temp-buffer (insert-file-contents (cdr first-entry))
                                                         (buffer-string)))))
                           (insert-heading-and-contents (cdr heading-and-contents) (1+ level)))))
-            (insert-heading-and-contents headings-and-contents 1)))))))
+            (insert-heading-and-contents headings-and-contents 1)
+            (read-only-mode)))))))
 
 (provide 'org-cc)
