@@ -43,7 +43,7 @@
 (defun org-cc-get-time-since-last-work ()
   "Returns the time since you last clocked in on the heading at point.
    Returns nil if it can't find clocking data."
-  (let ((logbook (org-get-logbook-notes)))
+  (let ((logbook (org-cc-get-logbook-notes)))
     (if logbook
         (save-match-data
           (string-match "^[[:space:]]*CLOCK: \\(.*--\\[.*\\)$" logbook)
