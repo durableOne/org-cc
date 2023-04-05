@@ -1,6 +1,7 @@
 ;;; Package: org-cc.el - Context clues for Org projects
 (require 'cl-lib)
 (require 'org-attach)
+(require 's)
 
 (defcustom org-cc-directory (concat org-directory "org-cc") "Directory in which the context clue files will be stored.")
 (defcustom org-cc-days 14 "Number of days since last work to trigger display of context clues.")
