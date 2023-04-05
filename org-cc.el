@@ -92,8 +92,7 @@
                              (string-to-number entry-override)
                            org-cc-days))) 
     ;; If no time was ever clocked on this task, look to previous sibling
-    (if (and  (not last-worked)
-              no-time-check)
+    (if (not last-worked)
         (progn
           (save-excursion
             (when (org-backward-heading-same-level 1)
