@@ -92,32 +92,33 @@
          (days-threshold (if entry-override
                              (string-to-number entry-override)
                            org-cc-days))) 
-      (when (or
-             no-time-check
-             (not last-worked)
-             (<= last-worked (- days-threshold)))
-        (let ((buffer (get-buffer-create "*Org Context Clues*"))
-              (headings-and-contents (org-cc-get-notes-files)))
-          (unless (cl-every 'null (mapcar 'cdr headings-and-contents))
-            (switch-to-buffer-other-window buffer)
-            (kill-region (point-min) (point-max))
-            (org-mode)
-            (org-indent-mode)
-            (insert "#+title: Org Context Clues\n\n")
-            (cl-labels ((insert-heading-and-contents (heading-and-contents level)
-                          ;; Collect notes for all headings and insert them into the buffer
-                          ;; Recursively cdrs down the list produced by org-cc-get-notes-files
-                          (when (not (null heading-and-contents))
-                            (let ((first-entry (car heading-and-contents)))
-                              (insert (concat (s-repeat level "*")
-                                              " "
-                                              (car first-entry)
-                                              "\n"))
-                              (when (cdr first-entry)
-                                (insert (with-temp-buffer (insert-file-contents (cdr first-entry))
-                                                          (buffer-string)))))
-                            (insert-heading-and-contents (cdr heading-and-contents) (1+ level)))))
-              (insert-heading-and-contents headings-and-contents 1)
-              (read-only-mode))))))))
+    ;; If no time was ever clocked on this task, look to previous sibling
+    (when (or
+           no-time-check
+           (not last-worked)
+           (<= last-worked (- days-threshold)))
+      (let ((buffer (get-buffer-create "*Org Context Clues*"))
+            (headings-and-contents (org-cc-get-notes-files)))
+        (unless (cl-every 'null (mapcar 'cdr headings-and-contents))
+          (switch-to-buffer-other-window buffer)
+          (kill-region (point-min) (point-max))
+          (org-mode)
+          (org-indent-mode)
+          (insert "#+title: Org Context Clues\n\n")
+          (cl-labels ((insert-heading-and-contents (heading-and-contents level)
+                        ;; Collect notes for all headings and insert them into the buffer
+                        ;; Recursively cdrs down the list produced by org-cc-get-notes-files
+                        (when (not (null heading-and-contents))
+                          (let ((first-entry (car heading-and-contents)))
+                            (insert (concat (s-repeat level "*")
+                                            " "
+                                            (car first-entry)
+                                            "\n"))
+                            (when (cdr first-entry)
+                              (insert (with-temp-buffer (insert-file-contents (cdr first-entry))
+                                                        (buffer-string)))))
+                          (insert-heading-and-contents (cdr heading-and-contents) (1+ level)))))
+            (insert-heading-and-contents headings-and-contents 1)
+            (read-only-mode)))))))
 
 (provide 'org-cc)
