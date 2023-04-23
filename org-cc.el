@@ -107,6 +107,7 @@
               (headings-and-contents (org-cc-get-notes-files)))
           (unless (cl-every 'null (mapcar 'cdr headings-and-contents))
             (switch-to-buffer-other-window buffer)
+            (read-only-mode -1)
             (kill-region (point-min) (point-max))
             (org-mode)
             (org-indent-mode)
