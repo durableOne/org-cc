@@ -5,6 +5,7 @@
 
 (defcustom org-cc-directory (concat org-directory "org-cc") "Directory in which the context clue files will be stored.")
 (defcustom org-cc-days 14 "Number of days since last work to trigger display of context clues.")
+(defcustom org-cc-only-window nil "Whether to make the context clues window the only displayed window")
 
 ;;;###autoload
 (defun org-cc-make-or-get-note-dir (&optional make-dir)
@@ -119,6 +120,8 @@
                                                         (buffer-string)))))
                           (insert-heading-and-contents (cdr heading-and-contents) (1+ level)))))
             (insert-heading-and-contents headings-and-contents 1)
-            (read-only-mode)))))))
+            (read-only-mode)
+            (when org-cc-only-window
+              (delete-other-windows))))))))
 
 (provide 'org-cc)
