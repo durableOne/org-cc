@@ -6,6 +6,7 @@
 (defcustom org-cc-directory (concat org-directory "org-cc") "Directory in which the context clue files will be stored.")
 (defcustom org-cc-days 14 "Number of days since last work to trigger display of context clues.")
 (defcustom org-cc-only-window nil "Whether to make the context clues window the only displayed window")
+(defcustom org-cc-tag "context" "Tag given to headings when a context file is created for them")
 
 ;;;###autoload
 (defun org-cc-make-or-get-note-dir (&optional make-dir)
@@ -24,6 +25,8 @@
 (defun org-cc-edit-cc-file ()
   "Opens the current heading's context clues file."
   (interactive)
+  (when (and org-cc-tag (not (member org-cc-tag (org-get-tags))))
+    (org-set-tags (cons org-cc-tag (org-get-tags nil t))))
   (find-file (concat (org-cc-make-or-get-note-dir t) "/cc.org")))
 
 ;;;###autoload
