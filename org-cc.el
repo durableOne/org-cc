@@ -25,7 +25,7 @@
 (defun org-cc-edit-cc-file ()
   "Opens the current heading's context clues file."
   (interactive)
-  (when (and org-cc-tag (not (member org-cc-tag (org-get-tags))))
+  (when (and org-cc-tag (not (member org-cc-tag (org-get-tags nil t))))
     (org-set-tags (cons org-cc-tag (org-get-tags nil t))))
   (find-file (concat (org-cc-make-or-get-note-dir t) "/cc.org")))
 
